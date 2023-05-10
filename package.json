@@ -1,11 +1,11 @@
 {
   "name": "forge-deep",
   "module": "index.ts",
-  "type": "module",
   "devDependencies": {
     "bun-types": "^0.5.0"
   },
+  "type": "module",
   "dependencies": {
-    "solc-typed-ast": "^14.0.2"
+    "solidity-ast": "^0.4.49"
   }
 }
