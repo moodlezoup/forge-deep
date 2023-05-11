@@ -17,5 +17,11 @@ contract Plants {
         string name;
     }
 
+    // Unused by Zoo.sol
+    struct Cactus {
+        Meters height;
+        string name;
+    }
+
     string[] public plantFacts;
 }

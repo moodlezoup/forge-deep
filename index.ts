@@ -1,272 +1,157 @@
 import { findAll } from "solidity-ast/utils";
-import artifact from "./out/Plants.sol/Plants.json";
-import { VariableDeclaration } from "solidity-ast";
+import {
+    ArrayTypeName,
+    EnumDefinition,
+    SourceUnit,
+    StructDefinition,
+    UserDefinedValueTypeDefinition,
+} from "solidity-ast";
+import TOML from "toml";
+import fs from "fs";
+import path from "path";
 
-for (const enumDef of findAll("EnumDefinition", artifact.ast as any)) {
-    const { canonicalName, name, members } = enumDef;
-    console.log(`
-    function prettyPrint(${canonicalName} a)
-        internal
-        pure
-        returns (string memory)
-    {
-        return _prettyPrint(a, "", "", 0, false);
-    }
+type ForgeDeepConfig = { dest: string; artifacts: string; contracts: string[]; types: [] };
 
-    function assertDeepEq(${canonicalName} a, ${canonicalName} b)
-        internal
-    {
-        if (a != b) {
-            emit log("Error: a == b not satisfied [${name}]");
-            emit log_named_string("      Left", prettyPrint(a));
-            emit log_named_string("     Right", prettyPrint(b));
-            fail();
-        }
-    }
+const config: ForgeDeepConfig = TOML.parse(fs.readFileSync("forge-deep.toml").toString());
 
-    function _prettyPrint(
-        ${canonicalName} a,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        bool highlight
-    )
-        private
-        pure
-        returns (string memory)
-    {
-        string[${members.length}] memory ${name}Strings = [${members.map((member) => `"${member.name}"`).join(", ")}];
-        string memory str = _tab(
-            prefix.concat(${name}Strings[uint8(a)]),
-            recursionDepth
-        );
-        return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
-    }
+const ASTs: { [absolutePath: string]: { ast: SourceUnit; imports: string[] } } = {};
 
-    function _comparePrint(
-        ${canonicalName} a,
-        ${canonicalName} b,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        Comparison memory comparison
-    )
-        private
-        pure
-    {
-        comparison.a = comparison.a
-            .concat(_prettyPrint(a, prefix, suffix, recursionDepth, a != b));
-        comparison.b = comparison.b
-            .concat(_prettyPrint(b, prefix, suffix, recursionDepth, a != b)
-        );
-    }`);
-}
-
-for (const userDefinedValueType of findAll("UserDefinedValueTypeDefinition", artifact.ast as any)) {
-    const { canonicalName, name } = userDefinedValueType;
-    console.log(`
-    function prettyPrint(${canonicalName} a)
-        internal
-        pure
-        returns (string memory)
-    {
-        return _prettyPrint(a, "", "", 0, false);
-    }
-
-    function assertDeepEq(${canonicalName} a, ${canonicalName} b)
-        internal
-    {
-        if (${canonicalName}.unwrap(a) != ${canonicalName}.unwrap(b)) {
-            emit log("Error: a == b not satisfied [${name}]");
-            emit log_named_string("      Left", prettyPrint(a));
-            emit log_named_string("     Right", prettyPrint(b));
-            fail();
-        }
-    }
-    
-    function _prettyPrint(
-        ${canonicalName} a,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        bool highlight
-    )
-        private
-        pure
-        returns (string memory)
-    {
-        string memory str = _tab(
-            prefix.concat(prettyPrint(${canonicalName}.unwrap(a))),
-            recursionDepth
-        );
-        return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
-    }
-    
-    function _comparePrint(
-        ${canonicalName} a,
-        ${canonicalName} b,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        Comparison memory comparison
-    )
-        private
-        pure
-    {
-        bool equal = ${canonicalName}.unwrap(a) == ${canonicalName}.unwrap(b);
-        comparison.a = comparison.a
-            .concat(_prettyPrint(a, prefix, suffix, recursionDepth, !equal));
-        comparison.b = comparison.b
-            .concat(_prettyPrint(b, prefix, suffix, recursionDepth, !equal));
-    }`);
-}
-
-for (const arrayType of findAll("ArrayTypeName", artifact.ast as any)) {
-    let {
-        typeDescriptions: { typeString },
-    } = arrayType;
-
-    // Remove "struct " from typeString
-    [typeString] = typeString?.split(" ").slice(-1)!;
-
-    console.log(`
-    function prettyPrint(${typeString} memory a)
-        internal
-        pure
-        returns (string memory)
-    {
-        return _prettyPrint(a, "", "", 0, false);
-    }
-
-    function assertDeepEq(${typeString} memory a, ${typeString} memory b)
-        internal
-    {
-        if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit log("Error: a == b not satisfied [${typeString}]");
-            Comparison memory comparison;
-            _comparePrint(a, b, "", "", 0, comparison);
-            emit log_named_string("\\na", comparison.a);
-            emit log_named_string("\\nb", comparison.b);
-            fail();
-        }
-    }
-    
-    function _prettyPrint(
-        ${typeString} memory a,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        bool highlight
-    )
-        private
-        pure
-        returns (string memory)
-    {
-        string memory str = _tab(prefix.concat("[\\n"), recursionDepth);
-        for (uint256 i = 0; i < a.length; i++) {
-            str = str.concat(_prettyPrint(a[i], "", ",\\n", recursionDepth + 1, false));
-        }
-        str = str.concat(_tab("]", recursionDepth));
-        return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
-    }
-    
-    function _comparePrint(
-        ${typeString} memory a,
-        ${typeString} memory b,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        Comparison memory comparison
-    )
-        private
-        pure
-    {
-        comparison.a = comparison.a.concat(_tab(prefix.concat("[\\n"), recursionDepth));
-        comparison.b = comparison.b.concat(_tab(prefix.concat("[\\n"), recursionDepth));
-        if (a.length < b.length) {
-            for (uint256 i = 0; i < a.length; i++) {
-                _comparePrint(a[i], b[i], "", ",\\n", recursionDepth + 1, comparison);
-            }
-            for (uint256 i = a.length; i < b.length; i++) {
-                comparison.b = comparison.b
-                    .concat(_prettyPrint(b[i], "", ",\\n", recursionDepth + 1, true));
-            }
+function findASTs(basePath: string, files: string[]) {
+    for (const f of files) {
+        var newBasePath = path.join(basePath, f);
+        if (fs.statSync(newBasePath).isDirectory()) {
+            findASTs(newBasePath, fs.readdirSync(newBasePath));
         } else {
-            for (uint256 i = 0; i < b.length; i++) {
-                _comparePrint(a[i], b[i], "", ",\\n", recursionDepth + 1, comparison);
+            if (f.substring(f.length - 5) == ".json") {
+                const artifact = JSON.parse(fs.readFileSync(newBasePath).toString());
+                if ("ast" in artifact) {
+                    const ast = artifact.ast as SourceUnit;
+                    ASTs[ast.absolutePath] = { ast, imports: Object.keys(artifact.metadata.sources) };
+                }
             }
-            for (uint256 i = b.length; i < a.length; i++) {
-                comparison.a = comparison.a
-                    .concat(_prettyPrint(a[i], "", ",\\n", recursionDepth + 1, true));
-            }
-        } 
-        comparison.a = comparison.a.concat(_tab("]", recursionDepth)).concat(suffix);
-        comparison.b = comparison.b.concat(_tab("]", recursionDepth)).concat(suffix);
-    }`);
+        }
+    }
 }
 
-for (const structDef of findAll("StructDefinition", artifact.ast as any)) {
-    const { canonicalName, members, name } = structDef;
-    const recursivePretty = (member: VariableDeclaration) => {
-        return `str = str.concat(_prettyPrint(a.${member.name}, "${member.name}: ", ",\\n", recursionDepth + 1, false));`;
-    };
-    const recursiveCompare = (member: VariableDeclaration) => {
-        return `_comparePrint(a.${member.name}, b.${member.name}, "${member.name}: ", ",\\n", recursionDepth + 1, comparison);`;
-    };
-    console.log(`
-    function prettyPrint(${canonicalName} memory a)
-        internal
-        pure
-        returns (string memory)
-    {
-        return _prettyPrint(a, "", "", 0, false);
+findASTs(config.artifacts, fs.readdirSync(config.artifacts));
+
+type Definition = EnumDefinition | UserDefinedValueTypeDefinition | StructDefinition | ArrayTypeName;
+const definitions: {
+    [name: string]: { def: Definition; source: string };
+} = {};
+
+function findDefinitions(absolutePath: string, search?: Set<string>) {
+    const references: Set<string> = new Set();
+
+    if (!(absolutePath in ASTs)) {
+        throw Error(`Compiler artifact for ${absolutePath} not found in ${config.artifacts}`);
+    }
+    const { ast, imports } = ASTs[absolutePath];
+
+    for (const enumDef of findAll("EnumDefinition", ast)) {
+        const { canonicalName } = enumDef;
+        if (search && !search.has(canonicalName)) {
+            continue;
+        }
+        if (canonicalName in definitions) {
+            throw Error(`${canonicalName} defined in both ${absolutePath} and ${definitions[canonicalName].source}`);
+        }
+        definitions[canonicalName] = { def: enumDef, source: absolutePath };
+        references.delete(canonicalName);
     }
 
-    function assertDeepEq(${canonicalName} memory a, ${canonicalName} memory b)
-        internal
-    {
-        if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit log("Error: a == b not satisfied [${name}]");
-            Comparison memory comparison;
-            _comparePrint(a, b, "", "", 0, comparison);
-            emit log_named_string("\\na", comparison.a);
-            emit log_named_string("\\nb", comparison.b);
-            fail();
+    for (const userTypeDef of findAll("UserDefinedValueTypeDefinition", ast)) {
+        const canonicalName = userTypeDef.canonicalName || userTypeDef.name;
+        if (search && !search.has(canonicalName)) {
+            continue;
+        }
+        if (canonicalName in definitions) {
+            throw Error(`${canonicalName} defined in both ${absolutePath} and ${definitions[canonicalName].source}`);
+        }
+        definitions[canonicalName] = { def: userTypeDef, source: absolutePath };
+        references.delete(canonicalName);
+    }
+
+    for (const arrayType of findAll("ArrayTypeName", ast)) {
+        let {
+            typeDescriptions: { typeString },
+            baseType: {
+                nodeType: elementNodeType,
+                typeDescriptions: { typeString: elementTypeString },
+            },
+        } = arrayType;
+        // Remove "struct "/"enum " from typeString
+        [typeString] = typeString?.split(" ").slice(-1)!;
+        if (search && !search.has(typeString)) {
+            continue;
+        }
+        if (typeString in definitions) continue;
+        definitions[typeString] = { def: arrayType, source: absolutePath };
+        references.delete(typeString);
+        // Remove "struct "/"enum " from elementType
+        [elementTypeString] = elementTypeString?.split(" ").slice(-1)!;
+        switch (elementNodeType) {
+            case "ElementaryTypeName":
+                break;
+            case "UserDefinedTypeName":
+                if (!(elementTypeString in definitions)) {
+                    references.add(elementTypeString);
+                }
+                break;
+            case "ArrayTypeName":
+                if (!(elementTypeString in definitions)) {
+                    references.add(elementTypeString);
+                }
+                break;
+            default:
+                throw Error(`Unexpected array element node type: ${elementNodeType} (${elementTypeString})`);
         }
     }
 
-    function _prettyPrint(
-        ${canonicalName} memory a,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        bool highlight
-    )
-        private
-        pure
-        returns (string memory)
-    {
-        string memory str = _tab(prefix.concat("{\\n"), recursionDepth);
-        ${members.map(recursivePretty).join("\n            ")}
-        str = str.concat(_tab("]", recursionDepth));
-        return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
+    for (const structDef of findAll("StructDefinition", ast)) {
+        const { canonicalName, members, name } = structDef;
+        if (search && !search.has(canonicalName)) {
+            continue;
+        }
+        if (canonicalName in definitions) {
+            throw Error(`${canonicalName} defined in both ${absolutePath} and ${definitions[canonicalName].source}`);
+        }
+        definitions[canonicalName] = { def: structDef, source: absolutePath };
+        references.delete(canonicalName);
+
+        for (const member of members) {
+            let memberTypeString = member.typeDescriptions.typeString!;
+            [memberTypeString] = memberTypeString?.split(" ").slice(-1)!;
+            const memberNodeType = member.typeName?.nodeType;
+            if (memberTypeString in definitions) continue;
+            switch (memberNodeType) {
+                case "ElementaryTypeName":
+                    break;
+                case "UserDefinedTypeName":
+                    if (!(memberTypeString in definitions)) {
+                        references.add(memberTypeString);
+                    }
+                    break;
+                case "ArrayTypeName":
+                    if (!(memberTypeString in definitions)) {
+                        references.add(memberTypeString);
+                    }
+                    break;
+                default:
+                    throw Error(`Unexpected struct member node type: ${memberTypeString} (${memberTypeString})`);
+            }
+        }
     }
 
-    function _comparePrint(
-        ${canonicalName} memory a,
-        ${canonicalName} memory b,
-        string memory prefix,
-        string memory suffix,
-        uint256 recursionDepth,
-        Comparison memory comparison
-    )
-        private
-        pure
-    {
-        comparison.a = comparison.a.concat(_tab(prefix.concat("{\\n"), recursionDepth));
-        comparison.b = comparison.b.concat(_tab(prefix.concat("{\\n"), recursionDepth));
-        ${members.map(recursiveCompare).join("\n            ")}
-        comparison.a = comparison.a.concat(_tab("}", recursionDepth)).concat(suffix);
-        comparison.b = comparison.b.concat(_tab("}", recursionDepth)).concat(suffix);
-    }`);
+    if (references.size > 0) {
+        for (const importPath of imports) {
+            findDefinitions(importPath, references);
+        }
+    }
 }
+
+for (const contract of config.contracts) {
+    findDefinitions(contract);
+}
+
+console.log(Object.keys(definitions));

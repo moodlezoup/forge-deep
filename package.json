@@ -6,6 +6,7 @@
   },
   "type": "module",
   "dependencies": {
-    "solidity-ast": "^0.4.49"
+    "solidity-ast": "^0.4.49",
+    "toml": "^3.0.0"
   }
 }
