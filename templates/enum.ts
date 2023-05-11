@@ -34,7 +34,9 @@ export function renderEnumFunctions(enumDef: EnumDefinition): string {
         pure
         returns (string memory)
     {
-        string[${members.length}] memory ${name}Strings = [${members.map((member) => `"${member.name}"`).join(", ")}];
+        string[${members.length}] memory ${name}Strings = [${members
+        .map((member) => `"${member.name}"`)
+        .join(", ")}];
         string memory str = _tab(
             prefix.concat(${name}Strings[uint8(a)]),
             recursionDepth

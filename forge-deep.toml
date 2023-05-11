@@ -1,4 +1,4 @@
 dest = 'lib/DeepTest.sol'
 artifacts = 'out'
 contracts = ['src/Zoo.sol']
-types = ['uint88[69]']
+types = ['Plants.Meters', 'Plants.Cactus', 'Zoo.Animal', 'VmSafe.Log']

@@ -3,7 +3,7 @@ pragma solidity ^0.8;
 
 import {LibString} from "solady/utils/LibString.sol";
 import "../src/Zoo.sol";
-import "../src/DeepTest.sol";
+import "../lib/DeepTest.sol";
 
 
 contract DeepTestTest is DeepTest {

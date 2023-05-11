@@ -1,10 +1,11 @@
-export const template = `// SPDX-License-Identifier: UNLICENSED
+export function renderDeepTestContract() {
+    return `// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8;
 
 import "forge-std/Test.sol";
 import {StdStyle} from "forge-std/StdStyle.sol";
 import {LibString} from "solady/utils/LibString.sol";
-import "./Zoo.sol";
+${}
 
 
 abstract contract DeepTest is Test {
@@ -284,3 +285,4 @@ abstract contract DeepTest is Test {
         comparison.b = comparison.b
             .concat(_prettyPrint(b, prefix, suffix, recursionDepth, !equal));
     }`;
+}
