@@ -89,7 +89,7 @@ To use these functions in your tests, simply have the test contract inherit `Dee
 curl -fsSL https://bun.sh/install | bash
 ```
 
-Install [Foundry](https://book.getfoundry.sh/getting-started/installation) is you don't already have it. 
+Install [Foundry](https://book.getfoundry.sh/getting-started/installation) if you don't already have it. 
 
 ### Test
 
