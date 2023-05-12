@@ -6,7 +6,7 @@
 
 ### Requirements
 
-`forge-deep` is built on [`bun`](bun.sh).
+`forge-deep` is built on [`bun`](https://bun.sh/).
 
 ```bash
 # Install bun (for macOS, Linux, and WSL)
@@ -82,7 +82,7 @@ To use these functions in your tests, simply have the test contract inherit `Dee
 
 ### Requirements
 
-`forge-deep` is built on [`bun`](bun.sh).
+`forge-deep` is built on [`bun`](https://bun.sh/).
 
 ```bash
 # Install bun (for macOS, Linux, and WSL)
