@@ -48,7 +48,7 @@ If `forge-deep` encounters an array element or struct members which is itself a 
 # Compile existing contracts
 forge build
 # Generate `DeepTest.sol`
-bunx forge-deep
+bunx --bun forge-deep
 ```
 
 And that's it –– a contract containing the generated `prettyPrint` and `assertDeepEq` functions now exists at the `dest` specified in `forge-deep.toml`. 

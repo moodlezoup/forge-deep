@@ -16,7 +16,7 @@ abstract contract DeepTest is Test {
         string b;
     }
 
-    string private constant TAB = "    ";
+    string constant TAB = "    ";
 
     function _tab(string memory str, uint256 numTabs)
         private 
@@ -27,7 +27,7 @@ abstract contract DeepTest is Test {
         for (uint256 i = 0; i < numTabs; i++) {
             tabs = tabs.concat(TAB);
         }
-        return tabs.concat(str);
+        return string.concat(tabs, str);
     }
 
     function _boldRed(string memory str) 
@@ -40,8 +40,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(uint256 a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(a.toString());
+        return a.toString();
     }    
 
     function _prettyPrint(
@@ -55,7 +57,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(a.toString()), recursionDepth);
+        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
     
@@ -77,9 +79,11 @@ abstract contract DeepTest is Test {
     }
     
     function prettyPrint(bytes32 a) 
-        internal
+        internal 
+        pure 
+        returns (string memory) 
     {
-        emit log(uint256(a).toHexString(32));
+        return uint256(a).toHexString(32);
     }
 
     function _prettyPrint(
@@ -93,7 +97,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(uint256(a).toHexString(32)), recursionDepth);
+        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -116,8 +120,10 @@ abstract contract DeepTest is Test {
     
     function prettyPrint(address a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(a.toHexString());
+        return a.toHexString();
     }
 
     function _prettyPrint(
@@ -131,7 +137,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(a.toHexString()), recursionDepth);
+        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }    
 
@@ -154,8 +160,10 @@ abstract contract DeepTest is Test {
     
     function prettyPrint(bool a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(a ? "true" : "false");
+        return a ? "true" : "false";
     }
 
     function _prettyPrint(
@@ -169,7 +177,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(a ? "true" : "false"), recursionDepth);
+        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -192,8 +200,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(string memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(string.concat('"', a, '"'));
+        return string.concat('"', a, '"');
     }
 
     function _prettyPrint(
@@ -207,7 +217,10 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(string.concat('"', a, '"')), recursionDepth);
+        string memory str = _tab(
+            string.concat(prefix, prettyPrint(a)),
+            recursionDepth
+        );
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -231,8 +244,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(bytes memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(a.toHexString());
+        return a.toHexString();
     }
 
     function _prettyPrint(
@@ -246,7 +261,10 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(prefix.concat(a.toHexString()), recursionDepth);
+        string memory str = _tab(
+            string.concat(prefix, prettyPrint(a)),
+            recursionDepth
+        );
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -273,8 +291,10 @@ abstract contract DeepTest is Test {
     
     function prettyPrint(Zoo.Animal a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Animal a, Zoo.Animal b)
@@ -282,8 +302,8 @@ abstract contract DeepTest is Test {
     {
         if (a != b) {
             emit log("Error: a == b not satisfied [Animal]");
-            emit log_named_string("      Left", _prettyPrint(a, "", "", 0, false));
-            emit log_named_string("     Right", _prettyPrint(b, "", "", 0, false));
+            emit log_named_string("      Left", prettyPrint(a));
+            emit log_named_string("     Right", prettyPrint(b));
             fail();
         }
     }
@@ -327,8 +347,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Zoo.Animal[] memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Animal[] memory a, Zoo.Animal[] memory b)
@@ -399,8 +421,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Zoo.Habitat[2] memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Habitat[2] memory a, Zoo.Habitat[2] memory b)
@@ -471,8 +495,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Zoo.Zone[] memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Zone[] memory a, Zoo.Zone[] memory b)
@@ -543,8 +569,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(string[] memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(string[] memory a, string[] memory b)
@@ -615,8 +643,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Zoo.Habitat memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Habitat memory a, Zoo.Habitat memory b)
@@ -647,7 +677,7 @@ abstract contract DeepTest is Test {
         str = str.concat(_prettyPrint(a.name, "name: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.animals, "animals: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.tree, "tree: ", ",\n", recursionDepth + 1, false));
-        str = str.concat(_tab("}", recursionDepth));
+        str = str.concat(_tab("]", recursionDepth));
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -673,8 +703,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Zoo.Zone memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Zoo.Zone memory a, Zoo.Zone memory b)
@@ -704,7 +736,7 @@ abstract contract DeepTest is Test {
         string memory str = _tab(prefix.concat("{\n"), recursionDepth);
         str = str.concat(_prettyPrint(a.id, "id: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.habitats, "habitats: ", ",\n", recursionDepth + 1, false));
-        str = str.concat(_tab("}", recursionDepth));
+        str = str.concat(_tab("]", recursionDepth));
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -729,8 +761,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Plants.Tree memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Plants.Tree memory a, Plants.Tree memory b)
@@ -761,7 +795,7 @@ abstract contract DeepTest is Test {
         str = str.concat(_prettyPrint(a.color, "color: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.height, "height: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.name, "name: ", ",\n", recursionDepth + 1, false));
-        str = str.concat(_tab("}", recursionDepth));
+        str = str.concat(_tab("]", recursionDepth));
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -787,8 +821,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Plants.LeafColor a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Plants.LeafColor a, Plants.LeafColor b)
@@ -796,8 +832,8 @@ abstract contract DeepTest is Test {
     {
         if (a != b) {
             emit log("Error: a == b not satisfied [LeafColor]");
-            emit log_named_string("      Left", _prettyPrint(a, "", "", 0, false));
-            emit log_named_string("     Right", _prettyPrint(b, "", "", 0, false));
+            emit log_named_string("      Left", prettyPrint(a));
+            emit log_named_string("     Right", prettyPrint(b));
             fail();
         }
     }
@@ -841,8 +877,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Plants.Meters a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Plants.Meters a, Plants.Meters b)
@@ -850,8 +888,8 @@ abstract contract DeepTest is Test {
     {
         if (Plants.Meters.unwrap(a) != Plants.Meters.unwrap(b)) {
             emit log("Error: a == b not satisfied [Meters]");
-            emit log_named_string("      Left", _prettyPrint(a, "", "", 0, false));
-            emit log_named_string("     Right", _prettyPrint(b, "", "", 0, false));
+            emit log_named_string("      Left", prettyPrint(a));
+            emit log_named_string("     Right", prettyPrint(b));
             fail();
         }
     }
@@ -899,8 +937,10 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(Plants.Cactus memory a)
         internal
+        pure
+        returns (string memory)
     {
-        emit log(_prettyPrint(a, "\n", "", 0, false));
+        return _prettyPrint(a, "", "", 0, false);
     }
 
     function assertDeepEq(Plants.Cactus memory a, Plants.Cactus memory b)
@@ -930,7 +970,7 @@ abstract contract DeepTest is Test {
         string memory str = _tab(prefix.concat("{\n"), recursionDepth);
         str = str.concat(_prettyPrint(a.height, "height: ", ",\n", recursionDepth + 1, false));
             str = str.concat(_prettyPrint(a.name, "name: ", ",\n", recursionDepth + 1, false));
-        str = str.concat(_tab("}", recursionDepth));
+        str = str.concat(_tab("]", recursionDepth));
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 

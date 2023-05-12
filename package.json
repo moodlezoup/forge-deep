@@ -1,10 +1,32 @@
 {
     "name": "forge-deep",
-    "version": "0.2.0",
+    "version": "0.2.1",
+    "description": "Codegen pretty-printing and deep equality Solidity functions for the Forge testing framework",
     "module": "index.ts",
     "bin": {
         "forge-deep": "index.ts"
     },
+    "scripts": {
+        "generate": "bun run index.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/moodlezoup/forge-deep.git"
+    },
+    "keywords": [
+        "solidity",
+        "foundry",
+        "forge",
+        "deep equal",
+        "pretty print",
+        "ethereum"
+    ],
+    "author": "Michael Zhu",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/moodlezoup/forge-deep/issues"
+    },
+    "homepage": "https://github.com/moodlezoup/forge-deep#readme",
     "devDependencies": {
         "bun-types": "^0.5.0"
     },
