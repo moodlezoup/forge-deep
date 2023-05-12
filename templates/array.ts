@@ -11,10 +11,8 @@ export function renderArrayFunctions(arrayType: ArrayTypeName): string {
     return `
     function prettyPrint(${typeString} memory a)
         internal
-        pure
-        returns (string memory)
     {
-        return _prettyPrint(a, "", "", 0, false);
+        emit log(_prettyPrint(a, "", "", 0, false));
     }
 
     function assertDeepEq(${typeString} memory a, ${typeString} memory b)

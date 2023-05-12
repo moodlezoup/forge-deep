@@ -14,10 +14,8 @@ export function renderStructFunctions(structDef: StructDefinition): string {
     return `
     function prettyPrint(${canonicalName} memory a)
         internal
-        pure
-        returns (string memory)
     {
-        return _prettyPrint(a, "", "", 0, false);
+        emit log(_prettyPrint(a, "\\n", "", 0, false));
     }
 
     function assertDeepEq(${canonicalName} memory a, ${canonicalName} memory b)
@@ -46,7 +44,7 @@ export function renderStructFunctions(structDef: StructDefinition): string {
     {
         string memory str = _tab(prefix.concat("{\\n"), recursionDepth);
         ${members.map(recursivePretty).join("\n            ")}
-        str = str.concat(_tab("]", recursionDepth));
+        str = str.concat(_tab("}", recursionDepth));
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 

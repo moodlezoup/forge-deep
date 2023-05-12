@@ -16,3 +16,12 @@ docs/
 # JS/TS
 bun.lockb
 node_modules/
+
+# Misc
+.gitignore
+.gitmodules
+.github/
+foundry.toml
+lib/
+src/
+test/

@@ -7,6 +7,18 @@ import "../lib/DeepTest.sol";
 
 
 contract DeepTestTest is DeepTest {
+    function testPrettyPrint() public {
+        Zoo.Habitat memory habitat;
+        habitat.name = "Pets";
+        habitat.animals = new Zoo.Animal[](3);
+        habitat.animals[0] = Zoo.Animal.Cat;
+        habitat.animals[1] = Zoo.Animal.Cat;
+        habitat.animals[2] = Zoo.Animal.Dog;
+        habitat.tree = Plants.Tree(Plants.LeafColor.Green, Plants.Meters.wrap(12), "Pascal");
+
+        prettyPrint(habitat);
+    }
+
     function testDeepEq() public {
         Zoo.Zone memory zone;
         zone.id = 1;

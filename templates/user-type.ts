@@ -6,10 +6,8 @@ export function renderUserTypeFunctions(userTypeDef: UserDefinedValueTypeDefinit
     return `
     function prettyPrint(${canonicalName} a)
         internal
-        pure
-        returns (string memory)
     {
-        return _prettyPrint(a, "", "", 0, false);
+        emit log(_prettyPrint(a, "", "", 0, false));
     }
 
     function assertDeepEq(${canonicalName} a, ${canonicalName} b)
@@ -17,8 +15,8 @@ export function renderUserTypeFunctions(userTypeDef: UserDefinedValueTypeDefinit
     {
         if (${canonicalName}.unwrap(a) != ${canonicalName}.unwrap(b)) {
             emit log("Error: a == b not satisfied [${name}]");
-            emit log_named_string("      Left", prettyPrint(a));
-            emit log_named_string("     Right", prettyPrint(b));
+            emit log_named_string("      Left", _prettyPrint(a, "", "", 0, false));
+            emit log_named_string("     Right", _prettyPrint(b, "", "", 0, false));
             fail();
         }
     }

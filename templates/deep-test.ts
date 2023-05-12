@@ -1,14 +1,14 @@
-export function renderDeepTestContract() {
-    return `// SPDX-License-Identifier: UNLICENSED
+export function renderDeepTestContract(contractName: string, filesToImport: string[], generatedFunctions: string) {
+    return `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
 import "forge-std/Test.sol";
 import {StdStyle} from "forge-std/StdStyle.sol";
 import {LibString} from "solady/utils/LibString.sol";
-${}
+${filesToImport.map((f) => `import "${f}";`).join("\n")}
 
 
-abstract contract DeepTest is Test {
+abstract contract ${contractName} is Test {
     using LibString for *;
 
     struct Comparison {
@@ -16,7 +16,7 @@ abstract contract DeepTest is Test {
         string b;
     }
 
-    string constant TAB = "    ";
+    string private constant TAB = "    ";
 
     function _tab(string memory str, uint256 numTabs)
         private 
@@ -27,7 +27,7 @@ abstract contract DeepTest is Test {
         for (uint256 i = 0; i < numTabs; i++) {
             tabs = tabs.concat(TAB);
         }
-        return string.concat(tabs, str);
+        return tabs.concat(str);
     }
 
     function _boldRed(string memory str) 
@@ -40,10 +40,8 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(uint256 a)
         internal
-        pure
-        returns (string memory)
     {
-        return a.toString();
+        emit log(a.toString());
     }    
 
     function _prettyPrint(
@@ -57,7 +55,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
+        string memory str = _tab(prefix.concat(a.toString()), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
     
@@ -79,11 +77,9 @@ abstract contract DeepTest is Test {
     }
     
     function prettyPrint(bytes32 a) 
-        internal 
-        pure 
-        returns (string memory) 
+        internal
     {
-        return uint256(a).toHexString(32);
+        emit log(uint256(a).toHexString(32));
     }
 
     function _prettyPrint(
@@ -97,7 +93,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
+        string memory str = _tab(prefix.concat(uint256(a).toHexString(32)), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -120,10 +116,8 @@ abstract contract DeepTest is Test {
     
     function prettyPrint(address a)
         internal
-        pure
-        returns (string memory)
     {
-        return a.toHexString();
+        emit log(a.toHexString());
     }
 
     function _prettyPrint(
@@ -137,7 +131,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
+        string memory str = _tab(prefix.concat(a.toHexString()), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }    
 
@@ -160,10 +154,8 @@ abstract contract DeepTest is Test {
     
     function prettyPrint(bool a)
         internal
-        pure
-        returns (string memory)
     {
-        return a ? "true" : "false";
+        emit log(a ? "true" : "false");
     }
 
     function _prettyPrint(
@@ -177,7 +169,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(string.concat(prefix, prettyPrint(a)), recursionDepth);
+        string memory str = _tab(prefix.concat(a ? "true" : "false"), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -200,10 +192,8 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(string memory a)
         internal
-        pure
-        returns (string memory)
     {
-        return string.concat('"', a, '"');
+        emit log(string.concat('"', a, '"'));
     }
 
     function _prettyPrint(
@@ -217,10 +207,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(
-            string.concat(prefix, prettyPrint(a)),
-            recursionDepth
-        );
+        string memory str = _tab(prefix.concat(string.concat('"', a, '"')), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -244,10 +231,8 @@ abstract contract DeepTest is Test {
 
     function prettyPrint(bytes memory a)
         internal
-        pure
-        returns (string memory)
     {
-        return a.toHexString();
+        emit log(a.toHexString());
     }
 
     function _prettyPrint(
@@ -261,10 +246,7 @@ abstract contract DeepTest is Test {
         pure
         returns (string memory)
     {
-        string memory str = _tab(
-            string.concat(prefix, prettyPrint(a)),
-            recursionDepth
-        );
+        string memory str = _tab(prefix.concat(a.toHexString()), recursionDepth);
         return highlight ? _boldRed(str).concat(suffix) : str.concat(suffix);
     }
 
@@ -284,5 +266,12 @@ abstract contract DeepTest is Test {
             .concat(_prettyPrint(a, prefix, suffix, recursionDepth, !equal));
         comparison.b = comparison.b
             .concat(_prettyPrint(b, prefix, suffix, recursionDepth, !equal));
-    }`;
+    }
+    
+    //////////////////// BEGIN GENERATED ////////////////////
+
+    ${generatedFunctions}
+
+    ///////////////////// END GENERATED /////////////////////
+}`;
 }

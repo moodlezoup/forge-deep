@@ -1,12 +1,16 @@
 {
-  "name": "forge-deep",
-  "module": "index.ts",
-  "devDependencies": {
-    "bun-types": "^0.5.0"
-  },
-  "type": "module",
-  "dependencies": {
-    "solidity-ast": "^0.4.49",
-    "toml": "^3.0.0"
-  }
+    "name": "forge-deep",
+    "version": "0.1.0",
+    "module": "index.ts",
+    "bin": {
+        "forge-deep": "index.ts"
+    },
+    "devDependencies": {
+        "bun-types": "^0.5.0"
+    },
+    "type": "module",
+    "dependencies": {
+        "solidity-ast": "^0.4.49",
+        "toml": "^3.0.0"
+    }
 }

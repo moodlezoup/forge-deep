@@ -6,6 +6,7 @@ import path from "path";
 
 import {
     renderArrayFunctions,
+    renderDeepTestContract,
     renderEnumFunctions,
     renderStructFunctions,
     renderUserTypeFunctions,
@@ -197,5 +198,12 @@ if (typesToSearchFor.size > 0) {
     throw Error(`Types ${Array.from(typesToSearchFor.keys()).join(", ")} not found`);
 }
 
-console.log(Object.keys(results));
-console.log(filesToImport);
+const deepTestContract = renderDeepTestContract(
+    path.basename(config.dest).slice(0, -4),
+    Array.from(filesToImport),
+    Object.values(results)
+        .map(({ fns }) => fns)
+        .join("\n")
+);
+
+fs.writeFileSync(config.dest, deepTestContract);
