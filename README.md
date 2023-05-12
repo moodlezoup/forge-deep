@@ -42,9 +42,20 @@ For more fine-grained control over which types to generate code for, you can use
 
 If `forge-deep` encounters an array element or struct members which is itself a user-defined value type, enum, struct, or array, it will recursively look for the definition and generate code for that type. 
 
+### Codegen
+
+```bash
+# Compile existing contracts
+forge build
+# Generate `DeepTest.sol`
+bunx forge-deep
+```
+
+And that's it –– a contract containing the generated `prettyPrint` and `assertDeepEq` functions now exists at the `dest` specified in `forge-deep.toml`. 
+
 ### Provided Solidity functions
 
-`forge-deep` generates an abstract contract, whose path and name are specified by `dest` in `forge-deep.toml`.
+`forge-deep` generates an abstract contract, whose name is determined by `dest` in `forge-deep.toml`.
 
 ```solidity
 abstract contract DeepTest is Test {

@@ -328,7 +328,7 @@ abstract contract DeepTest is Test {
     function prettyPrint(Zoo.Animal[] memory a)
         internal
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        emit log(_prettyPrint(a, "\n", "", 0, false));
     }
 
     function assertDeepEq(Zoo.Animal[] memory a, Zoo.Animal[] memory b)
@@ -400,7 +400,7 @@ abstract contract DeepTest is Test {
     function prettyPrint(Zoo.Habitat[2] memory a)
         internal
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        emit log(_prettyPrint(a, "\n", "", 0, false));
     }
 
     function assertDeepEq(Zoo.Habitat[2] memory a, Zoo.Habitat[2] memory b)
@@ -472,7 +472,7 @@ abstract contract DeepTest is Test {
     function prettyPrint(Zoo.Zone[] memory a)
         internal
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        emit log(_prettyPrint(a, "\n", "", 0, false));
     }
 
     function assertDeepEq(Zoo.Zone[] memory a, Zoo.Zone[] memory b)
@@ -544,7 +544,7 @@ abstract contract DeepTest is Test {
     function prettyPrint(string[] memory a)
         internal
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        emit log(_prettyPrint(a, "\n", "", 0, false));
     }
 
     function assertDeepEq(string[] memory a, string[] memory b)

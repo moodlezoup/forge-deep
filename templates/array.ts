@@ -12,7 +12,7 @@ export function renderArrayFunctions(arrayType: ArrayTypeName): string {
     function prettyPrint(${typeString} memory a)
         internal
     {
-        emit log(_prettyPrint(a, "", "", 0, false));
+        emit log(_prettyPrint(a, "\\n", "", 0, false));
     }
 
     function assertDeepEq(${typeString} memory a, ${typeString} memory b)
