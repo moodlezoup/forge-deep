@@ -99,7 +99,7 @@ rm lib/DeepTest.sol
 # Compile but ignore our test contract, which uses `DeepTest.sol`
 forge build --skip test
 # Generate `DeepTest.sol`
-bun run index.ts
+bun run --bun generate
 # Run test
 forge test -vv
 ```

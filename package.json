@@ -1,13 +1,13 @@
 {
     "name": "forge-deep",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Codegen pretty-printing and deep equality Solidity functions for the Forge testing framework",
     "module": "index.ts",
     "bin": {
         "forge-deep": "index.ts"
     },
     "scripts": {
-        "generate": "bun run index.ts"
+        "generate": "bun run --bun index.ts"
     },
     "repository": {
         "type": "git",

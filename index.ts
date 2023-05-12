@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { findAll } from "solidity-ast/utils";
 import { SourceUnit } from "solidity-ast";
 import TOML from "toml";
